@@ -1,0 +1,42 @@
+version: '3.8'
+
+volumes:
+  db_storage:
+
+services:
+  app:
+    build: .
+    container_name: docker-basico-php-apache
+    volumes:
+      - ./app:/var/www/html
+    ports:
+      - 2002:80
+    depends_on:
+      - db
+  
+
+  db:
+    image: mysql:5.7
+    container_name: docker-basico-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=mypassword
+      - MYSQL_DATABASE=testedb
+    volumes:
+      - db_storage:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: docker-basico-myadmin
+    ports:
+      - 8080:80
+    environment:
+      - MYSQL_ROOT_PASSWORD=mypassword
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=mypassword
+      # Auto-login
+      
+    depends_on:
+      - db
