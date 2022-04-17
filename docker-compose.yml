@@ -1,8 +1,12 @@
 version: '3.8'
 
-volumes:
-  db_storage:
+networks:
+  network-test:
+    driver: bridge
 
+volumes:
+  volumedb:
+  
 services:
   app:
     build: .
@@ -13,30 +17,36 @@ services:
       - 2002:80
     depends_on:
       - db
+    networks:
+      - network-test
   
-
   db:
     image: mysql:5.7
     container_name: docker-basico-db
     environment:
       - MYSQL_ROOT_PASSWORD=mypassword
-      - MYSQL_DATABASE=testedb
+      - MYSQL_DATABASE=banco_inicial
+      - MYSQL_USER=thiago
+      - MYSQL_PASSWORD=226
     volumes:
-      - db_storage:/var/lib/mysql
+      - ./volumedb:/var/lib/mysql
     ports:
       - 3306:3306
+    networks:
+      - network-test
 
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: docker-basico-myadmin
     ports:
       - 8080:80
-    environment:
-      - MYSQL_ROOT_PASSWORD=mypassword
-      - PMA_HOST=db
-      - PMA_USER=root
-      - PMA_PASSWORD=mypassword
-      # Auto-login
-      
+    # environment:
+    #   # - MYSQL_ROOT_PASSWORD=mypassword
+    #   # - PMA_HOST=db
+    #   # - PMA_USER=root
+    #   # - PMA_PASSWORD=mypassword
+    #   # Auto-login
     depends_on:
       - db
+    networks:
+      - network-test
